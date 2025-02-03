@@ -1,9 +1,11 @@
 import express from 'express';
 import {TodosModel, UserModel} from './db.js';
 import mongoose from 'mongoose';
+import cors from 'cors';
 const app = express();
 const PORT = 3000 || process.env.PORT;
 app.use(express.json());
+app.use(cors());
 const uri =  "mongodb+srv://4ytvoch:ZtS3sF0KzgKBOi0C@cluster0.s2ief.mongodb.net/basictodo";
 
 mongoose
