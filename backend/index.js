@@ -30,10 +30,11 @@ app.post('/todo', async (req, res) => {
     const userId = req.body.userId;
     const todo = req.body.todo;
 
-    const todos = TodosModel.create({
+    await TodosModel.create({
         todo : todo,
         userId : userId
     })
+    const todos = await TodosModel.find();
     res.json(todos);
 })
 
