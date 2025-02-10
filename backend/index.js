@@ -39,8 +39,9 @@ app.post('/todo', async (req, res) => {
 })
 
 app.delete('/todo', async (req, res) => {
-    const id = req.body.id;
-    const todos = await TodosModel.deleteOne({_id : id})
+    const id = req.query.id;
+    await TodosModel.deleteOne({_id : id})
+    const todos = await TodosModel.find();
     res.json(todos);
 })
 

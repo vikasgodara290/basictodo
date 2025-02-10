@@ -33,6 +33,14 @@ function TodoComponent() {
     }
   }
 
+  function onEdit(e) {
+    console.log(e.target.parentElement.id);
+  }
+  async function onDelete(e) {
+    const response = await axios.delete(`http://localhost:3000/todo?id=${e.target.parentElement.id}`)
+    setRes(response.data)
+  }
+
   function handleKeyDown(e){
     if(e.key==='Enter') addTodo();
   }
@@ -53,8 +61,10 @@ function TodoComponent() {
 
       {res &&
         res.map((todo) => (
-          <div key={todo.id} style={{ color: "white" }}>
+          <div key={String(todo._id)} id={String(todo._id)} style={{ color: "white" }}>
             {todo.todo}
+            <button onClick={onEdit}>Edit</button>
+            <button onClick={onDelete}>Delete</button>
           </div>
         ))}
     </>
