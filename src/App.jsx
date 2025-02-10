@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { Children, useEffect, useRef, useState } from 'react'
 import './App.css'
 import axios from 'axios'
 
@@ -13,7 +13,6 @@ function App() {
 
 function TodoComponent() {
   const [res, setRes] = useState([]);
-  const [inputTodo, setInputTodo] = useState('');
   const inputRef = useRef(null);
 
   async function addTodo(){
@@ -36,6 +35,7 @@ function TodoComponent() {
   function onEdit(e) {
     console.log(e.target.parentElement.id);
   }
+
   async function onDelete(e) {
     const response = await axios.delete(`http://localhost:3000/todo?id=${e.target.parentElement.id}`)
     setRes(response.data)
@@ -44,7 +44,6 @@ function TodoComponent() {
   function handleKeyDown(e){
     if(e.key==='Enter') addTodo();
   }
-
 
   useEffect(() => {
     (async () => {
@@ -57,17 +56,34 @@ function TodoComponent() {
   return (
     <>
       <input ref={inputRef} onKeyDown={handleKeyDown}></input>
-      <button onClick={addTodo}>Add</button>
+      <Button onClick={addTodo} name={'Add'}/>
 
       {res &&
         res.map((todo) => (
-          <div key={String(todo._id)} id={String(todo._id)} style={{ color: "white" }}>
-            {todo.todo}
-            <button onClick={onEdit}>Edit</button>
-            <button onClick={onDelete}>Delete</button>
-          </div>
-        ))}
+          <InputTodo todo={todo} key={String(todo._id)}>
+            <Button onClick={onEdit} name={'Edit'}/>
+            <Button onClick={onDelete} name={'Delete'}/>            
+          </InputTodo>
+        ))
+      }
     </>
   );
 }
+
+function Button({onClick, name}){
+  return(
+    <button onClick={onClick}>{name}</button>
+  )
+}
+
+function InputTodo({todo,children}){
+  return(
+    <div key={String(todo._id)} id={String(todo._id)} style={{ color: "white" }}>
+      {todo.todo}
+      {children}
+    </div>
+  )
+}
+
+
 export default App
