@@ -1,23 +1,22 @@
-import { Children, useEffect, useRef, useState } from 'react'
-import './App.css'
-import axios from 'axios'
+import { useEffect, useRef, useState } from 'react';
+import './App.css';
+import axios from 'axios';
 
 function App() {
   return (
     <>
-      <TodoComponent/>
+      <TodoContainer />
     </>
-  )
+  );
 }
 
-
-function TodoComponent() {
-  const [res, setRes] = useState([]);
+function TodoContainer() {
+  const [todos, setTodos] = useState([]);
   const inputRef = useRef(null);
   const [currentTodoId, setCurrentTodoId] = useState('');
 
-  async function addTodo(){
-    const todoText = inputRef.current.value;
+  async function handleAddTodo() {
+    const todoText = inputRef.current.value.trim();
     if (!todoText) return; // Prevent adding empty todos
 
     try {
@@ -26,105 +25,108 @@ function TodoComponent() {
         userId: '6760f6c7bc5edacea895d565',
       });
 
-      setRes(response.data);
+      setTodos(response.data);
       inputRef.current.value = '';
     } catch (error) {
       console.error('Error adding todo:', error);
     }
   }
 
-  function onEdit(todo) {
-    console.log(todo);
-    setCurrentTodoId(String(todo._id))
+  function handleEditClick(todo) {
+    setCurrentTodoId(String(todo._id));
   }
 
-  async function onDelete(e) {
-    const response = await axios.delete(`http://localhost:3000/todo?id=${e.target.parentElement.id}`)
-    setRes(response.data)
+  async function handleDeleteClick(event) {
+    const todoId = event.target.parentElement.id;
+    try {
+      const response = await axios.delete(`http://localhost:3000/todo?id=${todoId}`);
+      setTodos(response.data);
+    } catch (error) {
+      console.error('Error deleting todo:', error);
+    }
   }
 
-  function handleKeyDown(e){
-    if(e.key==='Enter') addTodo();
+  function handleInputKeyDown(event) {
+    if (event.key === 'Enter') handleAddTodo();
   }
 
   useEffect(() => {
     (async () => {
-      const url = "http://localhost:3000/todo";
-      const response = await axios.get(url);
-      setRes(response.data);
+      try {
+        const response = await axios.get('http://localhost:3000/todo');
+        setTodos(response.data);
+      } catch (error) {
+        console.error('Error fetching todos:', error);
+      }
     })();
   }, []);
-console.log(currentTodoId);
 
   return (
     <>
-      <input ref={inputRef} onKeyDown={handleKeyDown}></input>
-      <Button onClick={addTodo} name={'Add'}/>
+      <input ref={inputRef} onKeyDown={handleInputKeyDown} />
+      <Button onClick={handleAddTodo} label={'Add'} />
 
-      {res &&
-        res.map((todo) => (
-          (String(todo._id)===currentTodoId)? (
-            <EditTodo
-              key={todo._id}
-              todo={todo}
-              setRes={setRes}
-              setCurrentTodoId={setCurrentTodoId}
-            />
-          ):
-            (<TodoList todo={todo} key={String(todo._id)}>
-              <Button onClick={()=>{onEdit(todo)}} name={'Edit'}/>
-              <Button onClick={onDelete} name={'Delete'}/>            
-            </TodoList>)
-        ))
-      }
+      {todos.map((todo) =>
+        String(todo._id) === currentTodoId ? (
+          <TodoEditor key={todo._id} todo={todo} setTodos={setTodos} setCurrentTodoId={setCurrentTodoId} />
+        ) : (
+          <TodoItem key={todo._id} todo={todo}>
+            <Button onClick={() => handleEditClick(todo)} label={'Edit'} />
+            <Button onClick={handleDeleteClick} label={'Delete'} />
+          </TodoItem>
+        )
+      )}
     </>
   );
 }
 
-function Button({onClick, name}){
-  return(
-    <button onClick={onClick}>{name}</button>
-  )
+function Button({ onClick, label }) {
+  return <button onClick={onClick}>{label}</button>;
 }
 
-function TodoList({todo,children}){
-  return(
-    <div key={String(todo._id)} id={String(todo._id)} style={{ color: "white" }}>
+function TodoItem({ todo, children }) {
+  return (
+    <div id={String(todo._id)} style={{ color: 'white' }}>
       {todo.todo}
       {children}
     </div>
-  )
+  );
 }
 
-function EditTodo({todo, setRes, setCurrentTodoId}){
+function TodoEditor({ todo, setTodos, setCurrentTodoId }) {
   const editRef = useRef(null);
-  async function onEditDone(id) {
-    console.log(editRef.current.value);
-    const response = await axios.put('http://localhost:3000/todo',{
-      id:id,
-      todo:editRef.current.value
-    })
-    setCurrentTodoId(null)
-    setRes(response.data)
-  }
-  function onKeyDown(e){
-    if(e.key==='Enter'){
-      onEditDone(todo._id)
+
+  async function handleEditSubmit(todoId) {
+    const updatedText = editRef.current.value.trim();
+    if (!updatedText) return;
+
+    try {
+      const response = await axios.put('http://localhost:3000/todo', {
+        id: todoId,
+        todo: updatedText,
+      });
+      setTodos(response.data);
+      setCurrentTodoId('');
+    } catch (error) {
+      console.error('Error updating todo:', error);
     }
   }
 
-  function onCancel(){
-    setCurrentTodoId('')
+  function handleEditorKeyDown(event) {
+    if (event.key === 'Enter') handleEditSubmit(todo._id);
   }
-  
-  return(
+
+  function handleCancelEdit() {
+    setCurrentTodoId('');
+  }
+
+  return (
     <>
-      <input ref={editRef} onKeyDown={onKeyDown} defaultValue={todo.todo}></input>
-      <Button onClick={()=>{onEditDone(todo._id)}} name={'Done'}/>    
-      <Button onClick={onCancel} name={'Cancel'}/> 
+      <input ref={editRef} onKeyDown={handleEditorKeyDown} defaultValue={todo.todo} />
+      <Button onClick={() => handleEditSubmit(todo._id)} label={'Done'} />
+      <Button onClick={handleCancelEdit} label={'Cancel'} />
     </>
-  )
+  );
 }
 
-
-export default App
+export default App;
