@@ -49,8 +49,8 @@ app.put('/todo', async (req, res) =>{
     const id = req.body.id;
     const todo = req.body.todo;
 
-    const todos = await TodosModel.updateOne({_id : id}, {todo : todo});
-
+    await TodosModel.updateOne({_id : id}, {todo : todo});
+    const todos = await TodosModel.find();
     res.json(todos);
 })
 
