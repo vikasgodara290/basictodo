@@ -1,6 +1,6 @@
 
 import axios from 'axios'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import Button from './Button'
 export default function EditTodo({todo, setRes, setCurrentTodoId}){
     const editRef = useRef(null);
@@ -21,12 +21,17 @@ export default function EditTodo({todo, setRes, setCurrentTodoId}){
     function onCancel(){
       setCurrentTodoId('')
     }
-    
+
     return(
       <>
-        <input ref={editRef} onKeyDown={onKeyDown} defaultValue={todo.todo}></input>
-        <Button onClick={()=>{onEditDone(todo._id)}} name={'Done'}/>    
-        <Button onClick={onCancel} name={'Cancel'}/> 
+        <div className='w-full font-mono flex place-content-center items-center'>
+          <input autoFocus ref={editRef} onKeyDown={onKeyDown} className='flex-initial w-3/4 ml-52 focus:outline-0' defaultValue={todo.todo}></input>
+          <div className="flex-initial w-18 mr-52" id={String(todo._id)}>
+            <Button onClick={()=>{onEditDone(todo._id)}} name={'Done'}/>    
+            <Button onClick={onCancel} name={'Cancel'}/>  
+          </div> 
+        </div>
+
       </>
     )
   }

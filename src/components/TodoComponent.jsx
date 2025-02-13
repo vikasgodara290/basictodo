@@ -27,12 +27,13 @@ export default function TodoComponent() {
     }
   
     function onEdit(todo) {
-      console.log(todo);
       setCurrentTodoId(String(todo._id))
     }
   
-    async function onDelete(e) {
-      const response = await axios.delete(`http://localhost:3000/todo?id=${e.target.parentElement.id}`)
+    async function onDelete(todo) {
+      console.log(todo);
+      
+      const response = await axios.delete(`http://localhost:3000/todo?id=${String(todo._id)}`)
       setRes(response.data)
     }
   
@@ -45,15 +46,14 @@ export default function TodoComponent() {
         const url = "http://localhost:3000/todo";
         const response = await axios.get(url);
         setRes(response.data);
+        inputRef.current.focus()
       })();
     }, []);
   console.log(currentTodoId);
   
     return (
-      <>
-        <input ref={inputRef} onKeyDown={handleKeyDown}></input>
-        <Button onClick={addTodo} name={'Add'}/>
-  
+      <> 
+        <div className='h-24'></div> 
         {res &&
           res.map((todo) => (
             (String(todo._id)===currentTodoId)? (
@@ -64,12 +64,18 @@ export default function TodoComponent() {
                 setCurrentTodoId={setCurrentTodoId}
               />
             ):
-              (<TodoList todo={todo} key={String(todo._id)}>
-                <Button onClick={()=>{onEdit(todo)}} name={'Edit'}/>
-                <Button onClick={onDelete} name={'Delete'}/>            
+              (<TodoList todo={todo} key={String(todo._id)} isChecked={todo.isDone} setRes={setRes} onEdit={()=>onEdit(todo)}>
+                <Button onClick={()=>onEdit(todo)} name={'Edit'} todo={todo}/>
+                <Button onClick={()=>onDelete(todo)} name={'Delete'} todo={todo}/>            
               </TodoList>)
           ))
         }
+        
+        <div className='w-full font-mono flex place-content-center items-center'>
+          <input ref={inputRef} onKeyDown={handleKeyDown} className='flex-initial w-3/4 ml-52 focus:outline-0' placeholder='add new ...'></input>
+          <span className='flex-initial w-1/4 ml-52'></span>
+        </div>
       </>
     );
   }
+

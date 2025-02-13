@@ -1,5 +1,19 @@
-export default function Button({onClick, name}){
+import { Pencil, Trash, Check, X} from "lucide-react";
+
+export default function Button({onClick, name, todo}){
     return(
-      <button onClick={onClick}>{name}</button>
+    <>
+      <button onClick={onClick} className="mr-2">
+        {(name==='Delete')?<Trash size={18} onClick={onClick}/>:null}
+        {(name==='Done')?<Check size={18} onClick={onClick}/>:null}
+        {(name==='Cancel')?<X size={18} onClick={onClick}/>:null}
+      </button>
+
+      {(name==='Edit')&&
+        <button onClick={onClick} className="mr-2">
+          <Pencil size={18} onClick={onClick}/>
+        </button>
+      }
+    </>
     )
   }

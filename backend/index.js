@@ -48,8 +48,9 @@ app.delete('/todo', async (req, res) => {
 app.put('/todo', async (req, res) =>{
     const id = req.body.id;
     const todo = req.body.todo;
+    const isDone = req.body.isDone;
 
-    await TodosModel.updateOne({_id : id}, {todo : todo});
+    await TodosModel.updateOne({_id : id}, {todo : todo, isDone:isDone});
     const todos = await TodosModel.find();
     res.json(todos);
 })

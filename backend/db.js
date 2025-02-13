@@ -1,7 +1,9 @@
+import { Type } from "lucide-react";
 import mongoose from "mongoose";
 const ObjectId = mongoose.ObjectId;
 const todos = mongoose.Schema({
     todo : String,
+    isDone : {type : Boolean, default: false},
     userId : ObjectId
 })
 
