@@ -1,11 +1,16 @@
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css'
 import TodoComponent from './components/TodoComponent'
+import Login from './components/Login'
 
 function App() {
   return (
-    <>
-      <TodoComponent/>
-    </>
+    <Router>
+      <Routes>
+        <Route path='/' element={<TodoComponent/>}/>
+        <Route path='/login' element={<Login/>}/>
+      </Routes>
+    </Router>
   )
 }
 

@@ -64,7 +64,7 @@ export default function TodoComponent() {
                 setCurrentTodoId={setCurrentTodoId}
               />
             ):
-              (<TodoList todo={todo} key={String(todo._id)} isChecked={todo.isDone} setRes={setRes} onEdit={()=>onEdit(todo)}>
+              (<TodoList todo={todo} key={String(todo._id)} isChecked={todo.isDone} setRes={setRes} >
                 <Button onClick={()=>onEdit(todo)} name={'Edit'} todo={todo}/>
                 <Button onClick={()=>onDelete(todo)} name={'Delete'} todo={todo}/>            
               </TodoList>)

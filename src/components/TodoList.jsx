@@ -1,6 +1,6 @@
 import { useRef } from "react"
 import axios from 'axios'
-export default function TodoList({todo,children, isChecked, setRes, onEdit}){
+export default function TodoList({todo,children, isChecked, setRes}){
     const isCheckedRef = useRef(null)
 
     async function onInputChange(todo) {
@@ -15,7 +15,7 @@ export default function TodoList({todo,children, isChecked, setRes, onEdit}){
 
 
     return(
-      <div key={String(todo._id)} id={String(todo._id)} className="w-full font-mono flex place-content-center items-center" onClick={onEdit}>
+      <div key={String(todo._id)} id={String(todo._id)} className="w-full font-mono flex place-content-center items-center">
         <div className="flex-initial w-3/4 ml-52">
           <input onChange={()=> onInputChange(todo)} ref={isCheckedRef} checked={isChecked} id={String(todo._id)} type="checkbox" value={todo.todo} className="mr-2 w-4 h-4"/>
           {!isChecked && <label>{todo.todo}</label>}
