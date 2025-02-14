@@ -2,11 +2,13 @@ import express from 'express';
 import {TodosModel, UserModel} from './db.js';
 import mongoose from 'mongoose';
 import cors from 'cors';
+import jwt from 'jsonwebtoken'
 const app = express();
 const PORT = 3000 || process.env.PORT;
 app.use(express.json());
 app.use(cors());
 const uri =  "mongodb+srv://4ytvoch:ZtS3sF0KzgKBOi0C@cluster0.s2ief.mongodb.net/basictodo";
+const JWT_SECRET='fdjkIOi)7lkLKJLkjdsf(&*()dlfkslk'
 
 mongoose
   .connect(uri, {
@@ -20,21 +22,34 @@ mongoose
     console.error("Error connecting to MongoDB:", error);
   });
 
-app.get('/todo', async (req, res) => {
-    const todos = await TodosModel.find();
+async function auth(req, res, next) {
+  const token = req.headers.token;
+  const currentUser = jwt.verify(token, JWT_SECRET)
+  console.log(currentUser);
+  
+  if(currentUser){
+    req.headers.userId=currentUser._id;
+    next()
+  }
+  else res.send('you are not authorized!')
+}
+
+app.get('/todo', auth, async (req, res) => {
+    const currentUser = req.headers.userId;
+    const todos = await TodosModel.find({userId:currentUser});
     
     res.json(todos);
 })
 
-app.post('/todo', async (req, res) => {
-    const userId = req.body.userId;
+app.post('/todo', auth, async (req, res) => {
     const todo = req.body.todo;
+    const userId = req.headers.userId;
 
     await TodosModel.create({
         todo : todo,
         userId : userId
     })
-    const todos = await TodosModel.find();
+    const todos = await TodosModel.find({userId:userId});
     res.json(todos);
 })
 
@@ -60,7 +75,14 @@ app.post('/login', async (req, res)=>{
   const password=req.body.password;
 
   const response = await UserModel.findOne({username:username,password:password})
-  if(response) return res.send('You are loged in successfully!')
+  console.log(response);
+  
+  if(response){
+    const token = jwt.sign({
+      username:response._id
+    },JWT_SECRET)
+    return res.json({token:token})
+  }
 
   res.send('Please signup!');
 })

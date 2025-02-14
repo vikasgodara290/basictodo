@@ -12,8 +12,15 @@ export default function Login(){
             email:emailRef.current.value,
             password:passRef.current.value
         })
-        alert(res.data)
-        if(res.data==='You are loged in successfully!') navigater('/todo')
+    
+        if(res.data==='Please signup!'){
+            alert(res.data)
+            return
+        }
+        else{
+            navigater('/todo')
+            localStorage.setItem("token",res.data.token)
+        }
     }
 
     return(

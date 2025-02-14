@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from "react-router-dom";
 import axios from 'axios'
 import Button from './Button';
 import EditTodo from './EditTodo';
@@ -8,6 +9,7 @@ export default function TodoComponent() {
     const [res, setRes] = useState([]);
     const inputRef = useRef(null);
     const [currentTodoId, setCurrentTodoId] = useState('');
+    const navigater = useNavigate()
   
     async function addTodo(){
       const todoText = inputRef.current.value;
@@ -15,9 +17,14 @@ export default function TodoComponent() {
   
       try {
         const response = await axios.post('http://localhost:3000/todo', {
-          todo: todoText,
-          userId: '6760f6c7bc5edacea895d565',
-        });
+          todo: todoText
+        },
+        {
+          headers:{
+            token:localStorage.getItem("token")
+          }
+        }
+      );
   
         setRes(response.data);
         inputRef.current.value = '';
@@ -44,7 +51,17 @@ export default function TodoComponent() {
     useEffect(() => {
       (async () => {
         const url = "http://localhost:3000/todo";
-        const response = await axios.get(url);
+        if(!localStorage.getItem('token')){
+          alert('you are not authoried')
+          navigater('/login')
+          return
+
+        }
+        const response = await axios.get(url,{
+          headers: {
+             token: localStorage.getItem("token")
+          }
+        });
         setRes(response.data);
         inputRef.current.focus()
       })();
