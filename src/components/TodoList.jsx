@@ -9,6 +9,10 @@ export default function TodoList({todo,children, isChecked, setRes}){
         id:String(todo._id),
         todo:todo.todo,
         isDone:isCheckedRef.current.checked
+      },{
+        headers:{
+          token:localStorage.getItem("token")
+        }
       })
       setRes(response.data)
     }

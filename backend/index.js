@@ -3,6 +3,7 @@ import {TodosModel, UserModel} from './db.js';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import jwt from 'jsonwebtoken'
+import ObjectId from 'mongoose'
 const app = express();
 const PORT = 3000 || process.env.PORT;
 app.use(express.json());
@@ -28,7 +29,7 @@ async function auth(req, res, next) {
   console.log(currentUser);
   
   if(currentUser){
-    req.headers.userId=currentUser._id;
+    req.headers.userId=currentUser.id;
     next()
   }
   else res.send('you are not authorized!')
@@ -53,20 +54,21 @@ app.post('/todo', auth, async (req, res) => {
     res.json(todos);
 })
 
-app.delete('/todo', async (req, res) => {
+app.delete('/todo', auth, async (req, res) => {
     const id = req.query.id;
+    const userId = req.headers.userId;
     await TodosModel.deleteOne({_id : id})
-    const todos = await TodosModel.find();
+    const todos = await TodosModel.find({userId:userId});
     res.json(todos);
 })
 
-app.put('/todo', async (req, res) =>{
+app.put('/todo', auth, async (req, res) =>{
     const id = req.body.id;
     const todo = req.body.todo;
     const isDone = req.body.isDone;
-
+    const userId = req.headers.userId;
     await TodosModel.updateOne({_id : id}, {todo : todo, isDone:isDone});
-    const todos = await TodosModel.find();
+    const todos = await TodosModel.find({userId:userId});
     res.json(todos);
 })
 
@@ -75,11 +77,10 @@ app.post('/login', async (req, res)=>{
   const password=req.body.password;
 
   const response = await UserModel.findOne({username:username,password:password})
-  console.log(response);
   
   if(response){
     const token = jwt.sign({
-      username:response._id
+      id:response._id
     },JWT_SECRET)
     return res.json({token:token})
   }
@@ -98,7 +99,28 @@ app.post('/signup', async (req, res)=>{
     username:username,
     password:password
   })
-  res.send('You are successfully signed up!');
+
+  const res2 = await UserModel.findOne({username:username,password:password})
+  console.log(res2);
+  
+  if(res2){
+    const token = jwt.sign({
+      id:res2._id
+    },JWT_SECRET)
+    res.json({token:token})
+  }
+})
+
+app.get('/getUser', auth, async (req, res)=>{
+  const userId = req.headers.userId;
+  console.log(userId);
+  
+  const user = await UserModel.findOne({_id:userId})
+  console.log(user);
+  
+  res.json({
+    userEmail:user.username
+  })
 })
 
 app.listen(PORT, () => {

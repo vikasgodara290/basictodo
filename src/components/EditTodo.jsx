@@ -9,6 +9,10 @@ export default function EditTodo({todo, setRes, setCurrentTodoId}){
       const response = await axios.put('http://localhost:3000/todo',{
         id:id,
         todo:editRef.current.value
+      },{
+        headers:{
+          token:localStorage.getItem("token")
+        }
       })
       setCurrentTodoId(null)
       setRes(response.data)

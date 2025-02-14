@@ -4,11 +4,12 @@ import axios from 'axios'
 import Button from './Button';
 import EditTodo from './EditTodo';
 import TodoList from './TodoList';
-
+import Nav from './nav';
 export default function TodoComponent() {
     const [res, setRes] = useState([]);
     const inputRef = useRef(null);
     const [currentTodoId, setCurrentTodoId] = useState('');
+    const [email, setEmail] = useState('')
     const navigater = useNavigate()
   
     async function addTodo(){
@@ -40,7 +41,11 @@ export default function TodoComponent() {
     async function onDelete(todo) {
       console.log(todo);
       
-      const response = await axios.delete(`http://localhost:3000/todo?id=${String(todo._id)}`)
+      const response = await axios.delete(`http://localhost:3000/todo?id=${String(todo._id)}`, {
+        headers:{
+          token:localStorage.getItem("token")
+        }
+      })
       setRes(response.data)
     }
   
@@ -67,10 +72,30 @@ export default function TodoComponent() {
       })();
     }, []);
   console.log(currentTodoId);
+    
+  useEffect(()=>{
+    (async () => {
+      const url = "http://localhost:3000/getUser";
+      if(!localStorage.getItem('token')){
+        alert('you are not authoried')
+        navigater('/login')
+        return
+
+      }
+      const response = await axios.get(url,{
+        headers: {
+           token: localStorage.getItem("token")
+        }
+      });
+      setEmail(response.data.userEmail);
+    })();
+  },[])
   
     return (
-      <> 
-        <div className='h-24'></div> 
+      <>
+        <div className='h-36 ml-52 mr-52'>
+          {(email)&&<Nav Email={email}/>  }
+        </div> 
         {res &&
           res.map((todo) => (
             (String(todo._id)===currentTodoId)? (
