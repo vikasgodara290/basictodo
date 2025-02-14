@@ -7,7 +7,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path='/' element={<TodoComponent/>}/>
+        <Route path='/todo' element={<TodoComponent/>}/>
         <Route path='/login' element={<Login/>}/>
       </Routes>
     </Router>

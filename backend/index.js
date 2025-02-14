@@ -55,6 +55,30 @@ app.put('/todo', async (req, res) =>{
     res.json(todos);
 })
 
+app.post('/login', async (req, res)=>{
+  const username=req.body.email;
+  const password=req.body.password;
+
+  const response = await UserModel.findOne({username:username,password:password})
+  if(response) return res.send('You are loged in successfully!')
+
+  res.send('Please signup!');
+})
+
+app.post('/signup', async (req, res)=>{
+  const username=req.body.email;
+  const password=req.body.password;
+
+  const response = await UserModel.findOne({username:username,password:password})
+  if(response) return res.send('You are already a user!')
+
+  await UserModel.create({
+    username:username,
+    password:password
+  })
+  res.send('You are successfully signed up!');
+})
+
 app.listen(PORT, () => {
     console.log(`your app listening on port http://localhost:${PORT}`);
 })
