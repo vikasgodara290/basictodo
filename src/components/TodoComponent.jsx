@@ -4,7 +4,7 @@ import axios from 'axios'
 import Button from './Button';
 import EditTodo from './EditTodo';
 import TodoList from './TodoList';
-import Nav from './nav';
+import Nav from './Nav';
 export default function TodoComponent({backendUri}) {
     const [res, setRes] = useState([]);
     const inputRef = useRef(null);
