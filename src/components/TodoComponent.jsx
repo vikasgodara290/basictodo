@@ -5,7 +5,7 @@ import Button from './Button';
 import EditTodo from './EditTodo';
 import TodoList from './TodoList';
 import Nav from './nav';
-export default function TodoComponent() {
+export default function TodoComponent({backendUri}) {
     const [res, setRes] = useState([]);
     const inputRef = useRef(null);
     const [currentTodoId, setCurrentTodoId] = useState('');
@@ -17,7 +17,7 @@ export default function TodoComponent() {
       if (!todoText) return; // Prevent adding empty todos
   
       try {
-        const response = await axios.post('http://localhost:3000/todo', {
+        const response = await axios.post( backendUri+'todo', {
           todo: todoText
         },
         {
@@ -41,7 +41,7 @@ export default function TodoComponent() {
     async function onDelete(todo) {
       console.log(todo);
       
-      const response = await axios.delete(`http://localhost:3000/todo?id=${String(todo._id)}`, {
+      const response = await axios.delete(backendUri+`todo?id=${String(todo._id)}`, {
         headers:{
           token:localStorage.getItem("token")
         }
@@ -55,14 +55,13 @@ export default function TodoComponent() {
   
     useEffect(() => {
       (async () => {
-        const url = "http://localhost:3000/todo";
         if(!localStorage.getItem('token')){
           alert('you are not authoried')
           navigater('/login')
           return
 
         }
-        const response = await axios.get(url,{
+        const response = await axios.get(backendUri+'todo',{
           headers: {
              token: localStorage.getItem("token")
           }
@@ -75,14 +74,13 @@ export default function TodoComponent() {
     
   useEffect(()=>{
     (async () => {
-      const url = "http://localhost:3000/getUser";
       if(!localStorage.getItem('token')){
         alert('you are not authoried')
         navigater('/login')
         return
 
       }
-      const response = await axios.get(url,{
+      const response = await axios.get(backendUri+'getUser',{
         headers: {
            token: localStorage.getItem("token")
         }
@@ -100,13 +98,14 @@ export default function TodoComponent() {
           res.map((todo) => (
             (String(todo._id)===currentTodoId)? (
               <EditTodo
+                backendUri={backendUri}
                 key={todo._id}
                 todo={todo}
                 setRes={setRes}
                 setCurrentTodoId={setCurrentTodoId}
               />
             ):
-              (<TodoList todo={todo} key={String(todo._id)} isChecked={todo.isDone} setRes={setRes} >
+              (<TodoList todo={todo} key={String(todo._id)} isChecked={todo.isDone} setRes={setRes} backendUri={backendUri}>
                 <Button onClick={()=>onEdit(todo)} name={'Edit'} todo={todo}/>
                 <Button onClick={()=>onDelete(todo)} name={'Delete'} todo={todo}/>            
               </TodoList>)

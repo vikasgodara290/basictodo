@@ -2,11 +2,11 @@
 import axios from 'axios'
 import { useEffect, useRef } from 'react'
 import Button from './Button'
-export default function EditTodo({todo, setRes, setCurrentTodoId}){
+export default function EditTodo({todo, setRes, setCurrentTodoId, backendUri}){
     const editRef = useRef(null);
     async function onEditDone(id) {
       console.log(editRef.current.value);
-      const response = await axios.put('http://localhost:3000/todo',{
+      const response = await axios.put(backendUri+'todo',{
         id:id,
         todo:editRef.current.value
       },{

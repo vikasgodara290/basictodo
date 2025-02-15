@@ -1,13 +1,13 @@
 import { useRef , useEffect} from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-export default function Signup(){
+export default function Signup({backendUri}){
     const emailRef = useRef(null);
     const passRef = useRef(null);
     const navigater = useNavigate()
 
     async function onSignup() {
-        const res = await axios.post('http://localhost:3000/signup',{
+        const res = await axios.post(backendUri+'signup',{
             email:emailRef.current.value,
             password:passRef.current.value
         })

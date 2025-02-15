@@ -1,11 +1,11 @@
 import { useRef } from "react"
 import axios from 'axios'
-export default function TodoList({todo,children, isChecked, setRes}){
+export default function TodoList({todo,children, isChecked, setRes, backendUri}){
     const isCheckedRef = useRef(null)
 
     async function onInputChange(todo) {
       console.log(isCheckedRef.current.checked);
-      const response = await axios.put('http://localhost:3000/todo',{
+      const response = await axios.put(backendUri+'todo',{
         id:String(todo._id),
         todo:todo.todo,
         isDone:isCheckedRef.current.checked
