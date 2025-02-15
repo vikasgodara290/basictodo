@@ -8,6 +8,6 @@ export default defineConfig({
   server: {
     host: true, // Allows binding to 0.0.0.0
     port: 3000, // Ensure a valid port is set
-    allowedHosts: "all"
+    allowedHosts: ["mytodo-alvh.onrender.com"]
   }
 })
