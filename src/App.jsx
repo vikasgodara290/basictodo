@@ -4,7 +4,7 @@ import TodoComponent from './components/TodoComponent'
 import Login from './components/Login'
 import Signup from './components/Signup';
 
-const backendUri = 'https://basictodobackend.onrender.com/'
+const backendUri = 'http://localhost:3000';
 
 function App() {
   return (
